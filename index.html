@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calls Module Onboarding Task</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (~74ch) with a sticky section index on wide screens; stories are bordered blocks, spec tables scroll in their own boxes. */
+:root {
+  --bg: #f6f8f6;
+  --surface: #ffffff;
+  --fg: #16201b;
+  --muted: #5a6a62;
+  --line: #dbe3de;
+  --accent: #0b6b4a;
+  --accent-soft: #e2f1ea;
+  --code-bg: #eef3f0;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1512; --surface: #161e1a; --fg: #e3ebe6; --muted: #93a49b; --line: #2a3530;
+    --accent: #4fd19c; --accent-soft: #173327; --code-bg: #1c2621; --warn: #f0b54f; --warn-soft: #33270f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1512; --surface: #161e1a; --fg: #e3ebe6; --muted: #93a49b; --line: #2a3530;
+  --accent: #4fd19c; --accent-soft: #173327; --code-bg: #1c2621; --warn: #f0b54f; --warn-soft: #33270f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 15.5px/1.65 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.shell { max-width: 1120px; margin: 0 auto; padding-block: 48px 96px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 56px; }
+@media (max-width: 860px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 28px 64px; } nav.toc { display: none; } }
+nav.toc { position: sticky; top: calc(24px + env(safe-area-inset-top, 0px)); align-self: start; font-size: 13.5px; }
+nav.toc p { font: 600 11px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+nav.toc ol ol { padding-left: 12px; margin-top: 6px; }
+nav.toc a { color: var(--muted); text-decoration: none; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); }
+main { min-width: 0; max-width: 74ch; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -.01em; }
+h2 { font-size: 24px; font-weight: 700; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); scroll-margin-top: 24px; }
+h3 { font-size: 17px; font-weight: 600; margin-top: 28px; }
+h4 { font: 600 11.5px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: 20px; }
+p, ul, ol { margin: 12px 0 0; }
+ul, ol { padding-left: 22px; }
+li + li { margin-top: 4px; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font: 13px/1.5 var(--font-mono); background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { font: 13px/1.55 var(--font-mono); background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto; margin: 14px 0 0; }
+pre code { background: none; padding: 0; overflow-wrap: normal; }
+.eyebrow { font: 600 11.5px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+.lede { font-size: 17.5px; margin-top: 16px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 22px; padding: 14px 0; border-block: 1px solid var(--line); font-size: 14px; }
+.facts div { display: grid; gap: 2px; }
+.facts dt { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; }
+.note { margin-top: 16px; padding: 12px 16px; border-radius: 8px; background: var(--accent-soft); font-size: 14.5px; }
+.note.warn { background: var(--warn-soft); }
+.note strong { color: var(--accent); }
+.note.warn strong { color: var(--warn); }
+.tbl { overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--code-bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Requirement summary */
+.req { margin-top: 18px; padding: 18px 20px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.req ul { margin-top: 8px; }
+.req p:first-child { margin-top: 0; }
+
+/* User stories */
+.story { margin-top: 24px; padding: 20px 22px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); scroll-margin-top: 24px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.story-id { font: 600 12px/1 var(--font-mono); color: var(--accent); }
+.story h3 { margin: 0; font-size: 18px; flex: 1 1 260px; }
+.tag { font: 600 10.5px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.tag.should { background: var(--code-bg); color: var(--muted); }
+.tag.layer { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.asa { margin-top: 14px; padding-left: 14px; border-left: 3px solid var(--accent); font-size: 16px; }
+.asa b { font-weight: 600; color: var(--muted); }
+.ac { list-style: none; padding: 0; display: grid; gap: 6px; margin-top: 10px; }
+.ac li { margin: 0; padding-left: 22px; position: relative; }
+.ac li::before { content: ""; position: absolute; left: 4px; top: .62em; width: 8px; height: 8px; border: 1.5px solid var(--accent); border-radius: 2px; }
+details { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); }
+details[open] summary { margin-bottom: 4px; }
+details ul, details p, details pre { font-size: 14.5px; }
+
+.checklist { list-style: none; padding: 0; display: grid; gap: 6px; }
+.checklist li { margin: 0; }
+.checklist label { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; }
+.checklist input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--accent); }
+.checklist input:checked + span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+.progress { margin-top: 10px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+footer { margin-top: 64px; font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="toc" aria-label="Sections">
+    <p>On this page</p>
+    <ol>
+      <li><a href="#requirement">Requirement in brief</a></li>
+      <li><a href="#stories">User stories</a>
+        <ol>
+          <li><a href="#us1">US-1 Call overview</a></li>
+          <li><a href="#us2">US-2 Find calls</a></li>
+          <li><a href="#us3">US-3 Call details</a></li>
+          <li><a href="#us4">US-4 Export</a></li>
+          <li><a href="#us5">US-5 Log duration</a></li>
+          <li><a href="#us6">US-6 Branch privacy</a></li>
+        </ol>
+      </li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#codebase">Codebase tour</a></li>
+      <li><a href="#done">Definition of done</a></li>
+      <li><a href="#deliver">Deliverables</a></li>
+      <li><a href="#plan">Suggested day plan</a></li>
+      <li><a href="#ai">Using AI</a></li>
+      <li><a href="#review">How it's reviewed</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <p class="eyebrow">SkillShikshya Central CRM · Onboarding task</p>
+    <h1>Ship the Calls module</h1>
+    <p class="lede">Build the Calls page so branch managers can see, search and export every call their counselors make. Along the way, fix a bug that charges counselors the wrong number of minutes.</p>
+
+    <dl class="facts">
+      <div><dt>Timebox</dt><dd>1 working day (~8 h)</dd></div>
+      <div><dt>Repos</dt><dd>Backend (Django) + Frontend (React)</dd></div>
+      <div><dt>AI tools</dt><dd>Allowed and encouraged</dd></div>
+      <div><dt>Output</dt><dd>1 PR per repo + short write-up</dd></div>
+    </dl>
+
+    <h2 id="requirement">Requirement in brief</h2>
+    <div class="req">
+      <p><strong>Today:</strong> every phone call a counselor makes to a lead is saved, and its length is deducted from that counselor's prepaid call minutes. You can only see calls one lead at a time, and the <em>Calls</em> menu item opens a “Coming soon” screen.</p>
+      <p><strong>We need:</strong> a working <em>Calls</em> page that:</p>
+      <ul>
+        <li>shows how much calling the team did (count, talk time, who called most)</li>
+        <li>lists every call, with search and filters</li>
+        <li>opens the full details of one call</li>
+        <li>exports the filtered calls to a spreadsheet</li>
+        <li>only shows a user the calls from their own branch</li>
+      </ul>
+      <p><strong>Also fix:</strong> when a counselor types a call duration like <code>4.19</code> or <code>4:19</code>, it's saved wrongly.</p>
+      <p><strong>Already done for you:</strong> the backend endpoint <code>GET /api/calls/</code> returns the call list with filters and search. You'll build the rest on top of it.</p>
+    </div>
+
+    <h2 id="stories">User stories</h2>
+    <p>Do the stories marked <em>Must</em> first. Each story has a goal, acceptance criteria to check against, and build notes you can expand. Treat the build notes as guidance: if you find a better way that still meets the criteria, take it and explain why in your PR.</p>
+
+    <!-- US-1 -->
+    <section class="story" id="us1">
+      <div class="story-head">
+        <span class="story-id">US-1</span>
+        <h3>See the team's call activity at a glance</h3>
+        <span class="tag">Must</span><span class="tag layer">BE + FE</span>
+      </div>
+      <p class="asa"><b>As a</b> branch manager, <b>I want</b> totals at the top of the Calls page, <b>so that</b> I know how much calling my team did without counting rows.</p>
+      <h4>Acceptance criteria</h4>
+      <ul class="ac">
+        <li>Four cards show <strong>Total calls</strong> (with the inbound/outbound split), <strong>Talk time</strong>, <strong>Average duration</strong> and <strong>Connect rate</strong>. A call counts as connected when it lasted more than 0 seconds.</li>
+        <li>A small chart shows <strong>calls per day</strong>, and a list shows the <strong>top 10 callers</strong> by number of calls.</li>
+        <li>Every number updates when the filters from US-2 change. For the same filters, <em>Total calls</em> equals the table's row count.</li>
+        <li>Days are counted in <strong>Nepal time</strong>. A call at 11 pm NPT belongs to that day, not the next one.</li>
+        <li>With no matching calls, the cards show 0 and the charts show an empty state. The page doesn't break.</li>
+      </ul>
+      <details>
+        <summary>Build notes</summary>
+        <p><strong>Backend:</strong> add <code>GET /api/calls/summary/</code> as an <code>@action(detail=False)</code> on <code>GlobalCallViewSet</code>. Run it through <code>self.filter_queryset(self.get_queryset())</code> so the filters, search and branch scoping are the same as the list's. Return one unpaginated object:</p>
+<pre><code>{
+  "total_calls": 128, "inbound": 40, "outbound": 88,
+  "total_seconds": 30215, "total_formatted": "08:23:35",
+  "avg_seconds": 236, "connected_calls": 110, "connect_rate": 0.859,
+  "by_day":  [{ "date": "2026-10-28", "calls": 14, "seconds": 3310 }],
+  "by_user": [{ "user_id": 9, "name": "Shikhar", "calls": 40, "seconds": 9800 }]
+}</code></pre>
+        <ul>
+          <li>Do all the arithmetic in the database with <code>aggregate</code>, <code>annotate</code> and <code>Count(filter=Q(...))</code>, not in a Python loop.</li>
+          <li>The server's <code>TIME_ZONE</code> is <code>'UTC'</code>, so pass <code>tzinfo=ZoneInfo("Asia/Kathmandu")</code> to <code>TruncDate</code>.</li>
+          <li>Calls without a <code>created_by</code> appear in <code>by_user</code> as <code>user_id: null, name: "Unknown"</code>.</li>
+        </ul>
+        <p><strong>Frontend:</strong> use the <code>useCallSummary(params)</code> hook. Draw the charts with <code>MiniBars</code> and <code>HBarList</code> from <code>src/components/charts.tsx</code>; don't add a chart library. Show skeletons while loading.</p>
+        <p><strong>Tests:</strong> correct totals, average and connect rate on a fixture that includes a 0-second call. A call at 20:00 UTC on Oct 28 counts under <code>2026-10-29</code>. An empty result returns zeros.</p>
+      </details>
+    </section>
+
+    <!-- US-2 -->
+    <section class="story" id="us2">
+      <div class="story-head">
+        <span class="story-id">US-2</span>
+        <h3>Find specific calls</h3>
+        <span class="tag">Must</span><span class="tag layer">FE (+ small BE)</span>
+      </div>
+      <p class="asa"><b>As a</b> branch manager, <b>I want</b> to search and filter the call log, <b>so that</b> I can answer questions like “show me every outbound call Sita made yesterday”.</p>
+      <h4>Acceptance criteria</h4>
+      <ul class="ac">
+        <li><code>/calls</code> shows a table, newest first. Columns: <strong>When · Direction · Lead (name + reference) · Phone · Logged by · Duration (MM:SS) · Outcome · Recording</strong>.</li>
+        <li>Clicking the lead name opens that lead's detail page. The recording column shows a link only when the call has a recording.</li>
+        <li>Filters: <strong>search</strong> (lead, phone, caller, notes), <strong>direction</strong>, <strong>logged by</strong> (user picker), and <strong>date range</strong> with the presets Today, Last 7 days, This month and Custom. Staff users also get a <strong>branch</strong> filter. A <em>Clear filters</em> button resets everything.</li>
+        <li>Clicking the <em>When</em> or <em>Duration</em> header sorts by that column. Clicking again reverses the order, and an arrow shows the current direction.</li>
+        <li>The table pages through 20 rows at a time and says “Showing 21–40 of 128”.</li>
+        <li><strong>Filters, sort and page are kept in the URL</strong>, so reloading or sharing the link shows exactly the same view. Changing a filter goes back to page 1.</li>
+        <li>A date range of “Today” includes calls up to 23:59:59. No calls from the last day are lost.</li>
+        <li>There are different messages for “no calls yet” and “no calls match these filters”, and an error message with a <em>Retry</em> button.</li>
+        <li>At 390 px wide, the page doesn't scroll sideways: the table scrolls inside its own box and the filters wrap. It's readable in light and dark mode.</li>
+      </ul>
+      <details>
+        <summary>Build notes</summary>
+        <ul>
+          <li>Replace the <code>ComingSoonPage</code> route for <code>/calls</code> in <code>src/App.tsx</code> with <code>src/pages/calls/index.tsx</code>. Copy the header layout from <code>src/pages/payments/index.tsx</code>.</li>
+          <li>Create <code>src/types/calls.ts</code>, <code>src/services/calls.service.ts</code> and <code>src/hooks/use-calls.ts</code>, using the same patterns as <code>use-call-minutes.ts</code> (<code>keepPreviousData</code>, query keys that start with <code>["calls", …]</code>). Don't use <code>any</code>.</li>
+          <li>Keep filter state in <code>useSearchParams</code>. Debounce the search with <code>useDebouncedValue</code>.</li>
+          <li>Send dates to <code>call_timestamp__gte</code> and <code>__lte</code> as ISO strings with a timezone offset, using the start and end of the local day.</li>
+          <li>Sorting uses the existing <code>ordering</code> parameter (<code>-call_timestamp</code>, <code>duration_seconds</code>, and so on).</li>
+          <li><strong>Small backend change:</strong> add a read-only <code>duration_formatted</code> field to <code>GlobalCallSerializer</code> using <code>format_duration</code> from <code>apps/callminutes/utils.py</code>, so the frontend doesn't have to format seconds.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- US-3 -->
+    <section class="story" id="us3">
+      <div class="story-head">
+        <span class="story-id">US-3</span>
+        <h3>Read the full details of one call</h3>
+        <span class="tag should">Should</span><span class="tag layer">FE</span>
+      </div>
+      <p class="asa"><b>As a</b> branch manager, <b>I want</b> to open a call from the list, <b>so that</b> I can read the counselor's notes and what happens next.</p>
+      <h4>Acceptance criteria</h4>
+      <ul class="ac">
+        <li>Clicking a row opens a side panel without leaving the page.</li>
+        <li>The panel shows the full date and time, direction, lead, phone, caller, logged by, duration, outcome, <strong>notes</strong>, <strong>next action</strong>, <strong>next follow-up</strong>, and the recording link if there is one.</li>
+        <li>Empty fields show “—” and are not hidden, so the layout stays the same from call to call.</li>
+        <li>The panel closes with Esc or the close button, and the list keeps its filters and scroll position.</li>
+      </ul>
+      <details>
+        <summary>Build notes</summary>
+        <p>Use the existing <code>Sheet</code> component from <code>src/components/ui/sheet.tsx</code>. <code>src/pages/students/student-detail-sheet.tsx</code> is a good example to follow. The list response already has every field you need, so you don't need another API call.</p>
+      </details>
+    </section>
+
+    <!-- US-4 -->
+    <section class="story" id="us4">
+      <div class="story-head">
+        <span class="story-id">US-4</span>
+        <h3>Export calls to a spreadsheet</h3>
+        <span class="tag">Must</span><span class="tag layer">BE + FE</span>
+      </div>
+      <p class="asa"><b>As a</b> branch manager, <b>I want</b> to download the calls I'm looking at as a CSV, <b>so that</b> I can share them in reports and check them in Excel.</p>
+      <h4>Acceptance criteria</h4>
+      <ul class="ac">
+        <li>An <strong>Export CSV</strong> button downloads <em>all</em> calls that match the current filters, across every page. It shows a spinner while the file is being prepared.</li>
+        <li>The file is named <code>calls-YYYY-MM-DD.csv</code>, with these columns in order: Date &amp; time (NPT) · Direction · Lead · Reference · Phone · Caller · Logged by · Duration (MM:SS) · Seconds · Outcome · Notes · Recording.</li>
+        <li>The file opens in Excel and Google Sheets with Nepali (Devanagari) names displayed correctly.</li>
+        <li>A note that starts with <code>=</code>, <code>+</code>, <code>-</code> or <code>@</code> is shown as plain text. It never runs as a spreadsheet formula.</li>
+        <li>Exporting 20,000 calls doesn't time out or run one database query per row.</li>
+      </ul>
+      <details>
+        <summary>Build notes</summary>
+        <ul>
+          <li><strong>Backend:</strong> add <code>GET /api/calls/export/</code> as an <code>@action</code> on <code>GlobalCallViewSet</code>, with the same <code>filter_queryset</code> call as the list. Use <code>LeadViewSet.export_csv</code> as a model. Use <code>select_related</code> and <code>.iterator()</code>. <code>StreamingHttpResponse</code> earns extra credit.</li>
+          <li>Write a UTF-8 BOM (<code>﻿</code>) first, so Excel reads Devanagari correctly.</li>
+          <li>Prefix any text cell that starts with <code>= + - @</code> with <code>'</code>.</li>
+          <li><strong>Frontend:</strong> fetch the file with axios and <code>responseType: "blob"</code>, then save it with an object URL. A plain link won't work, because it skips the login-cookie refresh in <code>src/lib/api.ts</code>.</li>
+          <li><strong>Tests:</strong> content type, header row, row count, respects filters, and neutralises a note that starts with <code>=HYPERLINK(</code>.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- US-5 -->
+    <section class="story" id="us5">
+      <div class="story-head">
+        <span class="story-id">US-5</span>
+        <h3>Log a call with the duration I actually typed</h3>
+        <span class="tag">Must</span><span class="tag layer">FE (bug fix)</span>
+      </div>
+      <p class="asa"><b>As a</b> counselor, <b>I want</b> the call duration I type to be saved exactly, <b>so that</b> I'm charged the right number of call minutes.</p>
+      <p><strong>The bug:</strong> the Log Call dialog multiplies what you type by 60. So <code>4.5</code> is saved as 4 min 30 s, but everywhere else in the system <code>4.5</code> means 4 min 05 s. Typing <code>4:19</code> sends <code>NaN</code>.</p>
+      <h4>Acceptance criteria</h4>
+      <ul class="ac">
+        <li>Typing <code>4:19</code>, <code>4.19</code>, <code>4m19s</code> or <code>259</code> all save a <strong>259-second</strong> call.</li>
+        <li>The field shows the hint <em>MM:SS, e.g. 4:19</em> and a live preview under it, such as “= 4 min 19 sec”. Overflow carries over: <code>7:89</code> shows “= 8 min 29 sec”.</li>
+        <li>An invalid duration, or “Insufficient call minutes”, appears as an error on the field itself, not only as a pop-up.</li>
+        <li>After saving, the confirmation message shows the counselor's remaining balance, and the Calls page and call-minutes balance refresh.</li>
+      </ul>
+      <details>
+        <summary>Build notes</summary>
+        <ul>
+          <li>The bug is in <code>src/pages/leads/components/lead-action-dialogs.tsx</code>, on the line that builds <code>duration_seconds: … Number(call.duration) * 60</code>.</li>
+          <li>Send the raw text as <code>duration_input</code>. The backend already parses it; see “Flexible duration input” in <code>apps/app_documents/lead_app_calls_api_guide.md</code>.</li>
+          <li>For the preview, write a small TypeScript parser that mirrors <code>parse_duration_to_seconds</code> in <code>apps/callminutes/utils.py</code>. The backend's tests in <code>apps/callminutes/tests.py</code> are your spec.</li>
+          <li>The success response includes <code>remaining_seconds</code>. Invalidate the <code>["calls"]</code> and <code>["call-minutes"]</code> queries.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- US-6 -->
+    <section class="story" id="us6">
+      <div class="story-head">
+        <span class="story-id">US-6</span>
+        <h3>Branches only see their own calls</h3>
+        <span class="tag">Must</span><span class="tag layer">BE (tests + review)</span>
+      </div>
+      <p class="asa"><b>As the</b> business owner, <b>I want</b> each branch's call data to stay inside that branch, <b>so that</b> a counselor in Dharan can't see Biratnagar's leads and phone numbers.</p>
+      <h4>Acceptance criteria</h4>
+      <ul class="ac">
+        <li>A non-staff user in branch X never sees branch Y's calls in the list, the summary (US-1) or the export (US-4). A backend test proves each case.</li>
+        <li>Staff users see all branches by default and can narrow to one with <code>?branch_id=</code>.</li>
+        <li>Your write-up answers this: <strong>what does a non-staff user with no branch assigned see today?</strong> Describe the behaviour, the risk and your proposed fix. Don't change the behaviour in this PR.</li>
+      </ul>
+      <details>
+        <summary>Build notes</summary>
+        <p>Scoping happens in <code>BranchFilterBackend</code> (<code>apps/global_config/filters.py</code>). If your summary and export go through <code>filter_queryset</code>, they get scoping automatically. The tests prove it. <code>test_branch_scoping_for_non_staff</code> in <code>GlobalCallListTests</code> shows how to set it up.</p>
+      </details>
+    </section>
+
+    <div class="note"><strong>Small cleanup on the way:</strong> <code>apps/lead/urls.py</code> imports <code>GlobalCallViewSet</code> twice. Remove the duplicate. Document the two new endpoints in <code>apps/app_documents/lead_app_calls_api_guide.md</code>, in the style of the existing sections.</div>
+
+    <h2 id="setup">Setup</h2>
+<pre><code>git clone https://github.com/vrittech/skillshikshya-central-crm-be
+git clone https://github.com/vrittech/skillshikshya-central-crm-fe</code></pre>
+
+    <h3>Backend (port 8188)</h3>
+<pre><code>cd skillshikshya-central-crm-be
+cp .env.example .env
+docker compose up --build -d
+docker exec skillshikshyacrm_web python manage.py migrate
+docker exec -it skillshikshyacrm_web python manage.py createsuperuser
+docker exec skillshikshyacrm_web python manage.py test   # should be green before you start</code></pre>
+
+    <h3>Frontend (port 5173)</h3>
+<pre><code>cd skillshikshya-central-crm-fe
+npm install
+npm run dev          # Vite proxies /api to localhost:8188
+npm run seed:backend # optional: fills the backend with sample data</code></pre>
+    <p>Log in with your superuser. Give yourself call minutes in <em>Users → Call minutes</em>, then open a few leads and use <em>Log Call</em> so you have data to work with.</p>
+
+    <div class="note"><strong>Before writing code,</strong> spend 30–45 minutes reading <code>apps/app_documents/lead_app_calls_api_guide.md</code> and one finished frontend page such as <code>src/pages/payments/</code>. Most of this task is following patterns that already exist.</div>
+
+    <h2 id="codebase">Codebase tour</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Where</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td><code>be/apps/lead/models.py</code> · <code>LeadCall</code></td><td>The call record.</td></tr>
+        <tr><td><code>be/apps/lead/views.py</code> · <code>GlobalCallViewSet</code></td><td><code>/api/calls/</code>. New endpoints go here.</td></tr>
+        <tr><td><code>be/apps/lead/filters.py</code> · <code>GlobalCallFilter</code></td><td>Existing list filters.</td></tr>
+        <tr><td><code>be/apps/lead/serializers.py</code> · <code>GlobalCallSerializer</code></td><td>Row shape for the list.</td></tr>
+        <tr><td><code>be/apps/global_config/filters.py</code></td><td><code>BranchFilterBackend</code> (US-6).</td></tr>
+        <tr><td><code>be/apps/callminutes/utils.py</code></td><td><code>format_duration</code>, <code>parse_duration_to_seconds</code>.</td></tr>
+        <tr><td><code>be/apps/lead/tests.py</code> · <code>GlobalCallListTests</code></td><td>The test style to follow.</td></tr>
+        <tr><td><code>fe/src/App.tsx</code></td><td>Routes. <code>/calls</code> is currently “Coming soon”.</td></tr>
+        <tr><td><code>fe/src/services/</code>, <code>fe/src/hooks/</code></td><td>API wrappers and TanStack Query hooks, one per resource.</td></tr>
+        <tr><td><code>fe/src/pages/payments/index.tsx</code></td><td>The page layout to match.</td></tr>
+        <tr><td><code>fe/src/components/charts.tsx</code>, <code>fe/src/components/ui/</code></td><td>Charts and UI building blocks to reuse.</td></tr>
+        <tr><td><code>fe/src/pages/leads/components/lead-action-dialogs.tsx</code></td><td>The Log Call dialog (US-5).</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2 id="done">Definition of done</h2>
+    <p>Tick these off as you go. The ticks are saved in your browser only.</p>
+    <ul class="checklist" id="dod">
+      <li><label><input type="checkbox" id="d1"><span>Every acceptance criterion in US-1, US-2, US-4, US-5 and US-6 is met.</span></label></li>
+      <li><label><input type="checkbox" id="d2"><span>Backend: <code>python manage.py test</code> passes, with new tests for the summary, export and branch scoping.</span></label></li>
+      <li><label><input type="checkbox" id="d3"><span>Backend: the list, summary and export run a fixed number of queries, however many rows there are.</span></label></li>
+      <li><label><input type="checkbox" id="d4"><span>Backend: the API guide is updated and the duplicate import removed.</span></label></li>
+      <li><label><input type="checkbox" id="d5"><span>Frontend: <code>npm run build</code> and <code>npm run lint</code> pass with no new warnings.</span></label></li>
+      <li><label><input type="checkbox" id="d6"><span>Frontend: checked in loading, empty and error states, in dark mode, and at 390 px width.</span></label></li>
+      <li><label><input type="checkbox" id="d7"><span>The CSV was opened in a real spreadsheet app and looks right.</span></label></li>
+      <li><label><input type="checkbox" id="d8"><span>Both PRs are opened against <code>main</code> with screenshots and the write-up.</span></label></li>
+    </ul>
+    <p class="progress" id="progress" aria-live="polite">0 of 8 done</p>
+
+    <h2 id="deliver">Deliverables</h2>
+    <ol>
+      <li><strong>Backend PR</strong> on branch <code>feat/calls-summary-export</code>. Use small commits in the repo's style (<code>feat:</code>, <code>fix:</code>, …).</li>
+      <li><strong>Frontend PR</strong> on branch <code>feat/calls-page</code>. Include screenshots (light, dark and phone) and a short screen recording of filtering, sorting and exporting.</li>
+      <li><strong>Write-up</strong> in the frontend PR description, under one page:
+        <ul>
+          <li>Which stories you finished, and which you cut or simplified.</li>
+          <li>Your answer to the US-6 question.</li>
+          <li>One thing in the codebase you'd change next, and why.</li>
+          <li>How you used AI: what it wrote, what you corrected, and one suggestion you rejected.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h2 id="plan">Suggested day plan</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Time</th><th>Focus</th></tr></thead>
+      <tbody>
+        <tr><td class="num">0:00–1:00</td><td>Setup, run both apps and the tests, log a few calls, read the calls guide.</td></tr>
+        <tr><td class="num">1:00–1:30</td><td>US-5: the duration fix. It's small and makes your test data correct.</td></tr>
+        <tr><td class="num">1:30–3:00</td><td>US-1 and US-4 backend endpoints, plus US-6 tests.</td></tr>
+        <tr><td class="num">3:00–6:00</td><td>US-2 page, then the US-1 cards and charts, then the US-4 button.</td></tr>
+        <tr><td class="num">6:00–6:45</td><td>US-3 side panel (if time allows).</td></tr>
+        <tr><td class="num">6:45–8:00</td><td>Definition of done, PRs, screenshots, write-up.</td></tr>
+      </tbody>
+    </table></div>
+    <p>If you're running behind, cut in this order: US-3, then the charts in US-1. Write down what you cut. A smaller, finished, tested result is better than everything half done.</p>
+
+    <h2 id="ai">Using AI</h2>
+    <ul>
+      <li><strong>You own every line.</strong> In review we'll ask you to explain parts of your code. “The AI wrote it” isn't an answer.</li>
+      <li><strong>Show it the existing patterns</strong>, such as the Payments page, <code>use-call-minutes.ts</code> and <code>GlobalCallListTests</code>, so its output matches the codebase.</li>
+      <li><strong>Check the tricky parts yourself:</strong> the Nepal-time day buckets, the end-of-day date filter, branch scoping and CSV escaping.</li>
+      <li><strong>No secrets or real customer data</strong> (such as <code>.env</code> values or phone numbers) in prompts.</li>
+    </ul>
+
+    <h2 id="review">How it's reviewed</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Area</th><th>Weight</th><th>What we look for</th></tr></thead>
+      <tbody>
+        <tr><td>Acceptance criteria met</td><td class="num">35%</td><td>Each Must story works as written. The numbers agree across cards, table and export.</td></tr>
+        <tr><td>Fit with the codebase</td><td class="num">20%</td><td>Reuses the existing helpers, hooks and components. Looks like the rest of the app.</td></tr>
+        <tr><td>Tests</td><td class="num">15%</td><td>Backend tests that would catch a regression in scoping, time zones and export.</td></tr>
+        <tr><td>Security &amp; performance</td><td class="num">15%</td><td>Branch privacy, CSV safety, query counts.</td></tr>
+        <tr><td>Communication</td><td class="num">15%</td><td>Clear PRs, an honest write-up, good choices about what to cut.</td></tr>
+      </tbody>
+    </table></div>
+
+    <footer>Questions are part of the task. If something is unclear, ask early and note the answer in your write-up.</footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var KEY = "calls-task-dod-v2";
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("#dod input"));
+  var out = document.getElementById("progress");
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
+  function render() {
+    var n = boxes.filter(function (b) { return b.checked; }).length;
+    out.textContent = n + " of " + boxes.length + " done";
+  }
+  boxes.forEach(function (b) {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", function () {
+      saved[b.id] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      render();
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>
